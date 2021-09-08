@@ -30,9 +30,6 @@ const Login: React.FC = (): React.ReactElement => {
                             Sign in with Google
                         </Button>
                     </ButtonGoogleContainer>
-                    <ButtonNumberContainer>
-                        <Button fullWidth>Sign in with Phone Number</Button>
-                    </ButtonNumberContainer>
                 </LogoButton>
             </LoginBlock>
         </Container>

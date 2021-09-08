@@ -15,7 +15,14 @@ import MessageIcon from "@material-ui/icons/Message";
 import DotsIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
 import { Button } from "@material-ui/core";
-import { addDoc, collection, getDocs, query, where } from "@firebase/firestore";
+import {
+    addDoc,
+    collection,
+    getDoc,
+    getDocs,
+    query,
+    where,
+} from "@firebase/firestore";
 import { auth, db } from "../firebase";
 import Snackbar from "@material-ui/core/Snackbar";
 import { signOut } from "@firebase/auth";
@@ -23,7 +30,18 @@ import { signOut } from "@firebase/auth";
 function Navbar() {
     const [inputValue, setInputValue] = React.useState<string>("");
     const [snackValue, setSnackValue] = React.useState<boolean>(false);
+    const [chatsList, setChatsList] = React.useState<string[]>([]);
     const [user] = useAuthState(auth);
+
+    // const userChatRef = getDocs(collection(db, "chats"));
+
+    // const [snap] = useCollection(userChatRef, {
+    //     snapshotListenOptions: { includeMetadataChanges: true },
+    // });
+
+    React.useEffect(() => {
+        getQuerySnapshot();
+    }, []);
 
     const getQuerySnapshot = async () => {
         const userChatRef = query(
@@ -31,11 +49,25 @@ function Navbar() {
             where("user", "array-contains", user.email)
         );
         const querySnapshot = await getDocs(userChatRef);
+        let chats: any = [];
         querySnapshot.forEach((doc) => {
-            console.log(doc.data());
+            chats.push(doc.data());
         });
+        setChatsList(chats);
     };
-    getQuerySnapshot();
+
+    const chatsAlredyExist = (input: string): boolean => {
+        const filterChat = chatsList.filter(
+            (item: any) => item.user[1] === input
+        );
+        getQuerySnapshot();
+
+        if (filterChat.length > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    };
 
     const handleClose = () => {
         setSnackValue(false);
@@ -51,7 +83,11 @@ function Navbar() {
         if (!input) {
             return;
         }
-        if (EmailValidator.validate(input) && input !== user.email) {
+        if (
+            EmailValidator.validate(input) &&
+            input !== user.email &&
+            chatsAlredyExist(input)
+        ) {
             const addChat = async () => {
                 try {
                     const docRef = await addDoc(collection(db, "chats"), {
@@ -71,7 +107,10 @@ function Navbar() {
     return (
         <Container>
             <Header>
-                <HeaderAvatar onClick={() => signOut(auth)}></HeaderAvatar>
+                <HeaderAvatar
+                    onClick={() => signOut(auth)}
+                    src={user.photoURL}
+                ></HeaderAvatar>
                 <HeaderIcon>
                     <IconButton>
                         <MessageIcon />
@@ -108,6 +147,7 @@ function Navbar() {
                 key="123"
             />
             <NavbarButton onClick={createChat}>Добавить чат</NavbarButton>
+            {chatsList && chatsList.map((item: any) => <h4>{item.user[1]}</h4>)}
         </Container>
     );
 }
@@ -132,6 +172,7 @@ const Header = styled.div`
 `;
 const HeaderAvatar = styled(Avatar)`
     cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
     :hover {
         opacity: 0.8;
     }
@@ -141,7 +182,7 @@ const Search = styled.div`
     margin: 20px 10px;
     &&& {
         fieldset {
-            border: 1px solid #00ff00;
+            border: 1px solid #3cbb28;
         }
     }
 `;

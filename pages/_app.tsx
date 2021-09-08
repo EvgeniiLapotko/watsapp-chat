@@ -5,13 +5,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import Login from "./login";
 import Loading from "./loading";
-import {
-    addDoc,
-    collection,
-    doc,
-    serverTimestamp,
-    setDoc,
-} from "@firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "@firebase/firestore";
 
 function MyApp({ Component, pageProps }) {
     const [user, loading] = useAuthState(auth);

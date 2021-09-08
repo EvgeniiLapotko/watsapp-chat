@@ -22,7 +22,7 @@ const Container = styled.div`
 `;
 const LoadingBlock = styled.div`
     text-align: center;
-    margin-top: 100px;
+
     img {
         margin-bottom: 10px;
     }
