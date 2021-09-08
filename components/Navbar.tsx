@@ -1,7 +1,6 @@
 import React from "react";
 import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
 
 import styled from "styled-components";
 import Avatar from "@material-ui/core/Avatar";
@@ -18,8 +17,10 @@ import { Button } from "@material-ui/core";
 import {
     addDoc,
     collection,
+    doc,
     getDoc,
     getDocs,
+    onSnapshot,
     query,
     where,
 } from "@firebase/firestore";
@@ -30,38 +31,21 @@ import { signOut } from "@firebase/auth";
 function Navbar() {
     const [inputValue, setInputValue] = React.useState<string>("");
     const [snackValue, setSnackValue] = React.useState<boolean>(false);
-    const [chatsList, setChatsList] = React.useState<string[]>([]);
+    const [chatsList, setChatsList] = React.useState([]);
     const [user] = useAuthState(auth);
 
-    // const userChatRef = getDocs(collection(db, "chats"));
-
-    // const [snap] = useCollection(userChatRef, {
-    //     snapshotListenOptions: { includeMetadataChanges: true },
-    // });
-
     React.useEffect(() => {
-        getQuerySnapshot();
+        onSnapshot(query(collection(db, "chats")), (querySnapshot) => {
+            const chats = [];
+            querySnapshot.forEach((doc) => {
+                chats.push({ id: doc.id, ...doc.data() });
+            });
+            setChatsList(chats);
+        });
     }, []);
 
-    const getQuerySnapshot = async () => {
-        const userChatRef = query(
-            collection(db, "chats"),
-            where("user", "array-contains", user.email)
-        );
-        const querySnapshot = await getDocs(userChatRef);
-        let chats: any = [];
-        querySnapshot.forEach((doc) => {
-            chats.push(doc.data());
-        });
-        setChatsList(chats);
-    };
-
     const chatsAlredyExist = (input: string): boolean => {
-        const filterChat = chatsList.filter(
-            (item: any) => item.user[1] === input
-        );
-        getQuerySnapshot();
-
+        const filterChat = chatsList.filter((item) => item.user[1] === input);
         if (filterChat.length > 0) {
             return false;
         } else {
@@ -93,7 +77,6 @@ function Navbar() {
                     const docRef = await addDoc(collection(db, "chats"), {
                         user: [user.email, input],
                     });
-                    console.log("Document written with ID: ", docRef.id);
                 } catch (e) {
                     console.error("Error adding document: ", e);
                 }
@@ -147,7 +130,8 @@ function Navbar() {
                 key="123"
             />
             <NavbarButton onClick={createChat}>Добавить чат</NavbarButton>
-            {chatsList && chatsList.map((item: any) => <h4>{item.user[1]}</h4>)}
+            {chatsList &&
+                chatsList.map((item) => <h4 key={item.id}>{item.user[1]}</h4>)}
         </Container>
     );
 }
