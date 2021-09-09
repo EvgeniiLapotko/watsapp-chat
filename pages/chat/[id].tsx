@@ -8,14 +8,16 @@ import {
     doc,
     getDoc,
     getDocs,
+    onSnapshot,
     orderBy,
     query,
 } from "@firebase/firestore";
 import { auth, db } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-function Chat({ chats, messages }) {
+function Chat({ chats, messages, userDB }) {
     const [user] = useAuthState(auth);
+
     return (
         <ContainerChat>
             <Head>
@@ -23,7 +25,11 @@ function Chat({ chats, messages }) {
             </Head>
             <Navbar />
             <ChatBlock>
-                <ChatScreen chat={chats} messages={messages} />
+                <ChatScreen
+                    chat={chats}
+                    messages={JSON.parse(messages)}
+                    userDB={JSON.parse(userDB)}
+                />
             </ChatBlock>
         </ContainerChat>
     );
@@ -32,17 +38,22 @@ function Chat({ chats, messages }) {
 export default Chat;
 
 export async function getServerSideProps(context) {
-    const queryMessages = await getDocs(
+    const messages = [];
+    onSnapshot(
         query(
-            collection(db, `/chats/${context.query.id}/message`),
+            collection(db, `chats/${context.query.id}/messages`),
             orderBy("timestamp", "asc")
-        )
+        ),
+        (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                messages.push({ id: doc.id, ...doc.data() });
+            });
+        }
     );
-    const messages: any = [];
-    queryMessages.forEach((doc) => {
-        messages.push({
-            id: doc.id,
-            ...doc.data(),
+    const users = [];
+    onSnapshot(query(collection(db, `users`)), (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            users.push({ id: doc.id, ...doc.data() });
         });
     });
 
@@ -56,6 +67,7 @@ export async function getServerSideProps(context) {
         props: {
             messages: JSON.stringify(messages),
             chats: chat,
+            userDB: JSON.stringify(users),
         },
     };
 }
@@ -65,7 +77,8 @@ const ContainerChat = styled.section`
 `;
 const ChatBlock = styled.div`
     flex: 1;
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: none;
     height: 100vh;
 
     ::-webkit-scrollbar {

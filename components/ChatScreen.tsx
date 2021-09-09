@@ -8,25 +8,53 @@ import { auth, db } from "../firebase";
 
 import DotsIcon from "@material-ui/icons/MoreVert";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
-import { collection, onSnapshot, query } from "@firebase/firestore";
+import SmileIcon from "@material-ui/icons/InsertEmoticon";
+import SendIcon from "@material-ui/icons/Send";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    serverTimestamp,
+} from "@firebase/firestore";
 import Message from "./Message";
 
 interface IChatScreen {
     chat: any;
     messages: any;
+    userDB: any;
 }
 
 const ChatScreen: React.FC<IChatScreen> = ({
     chat,
     messages,
+    userDB,
 }: IChatScreen): React.ReactElement => {
     const [user] = useAuthState(auth);
     const router = useRouter();
-    const [messageList, setMessageList] = React.useState([]);
+    const [inputMessage, setInputMessage] = React.useState<string>("");
 
     const refBottom = React.useRef<HTMLDivElement>(
         document.createElement("div")
     );
+    const selectUser = userDB.filter((item) => item.email === chat.user[1]);
+
+    const submitMessage = async (e) => {
+        e.preventDefault();
+        setInputMessage("");
+        try {
+            if (user) {
+                await addDoc(collection(db, `chats/${chat.id}/messages`), {
+                    message: inputMessage,
+                    name: user.displayName,
+                    img: user.photoURL,
+                    timestamp: serverTimestamp(),
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     React.useEffect(() => {
         if (refBottom) {
@@ -36,31 +64,23 @@ const ChatScreen: React.FC<IChatScreen> = ({
         }
     }, []);
 
-    React.useEffect(() => {
-        onSnapshot(
-            query(collection(db, `chats/${chat.id}/messages`)),
-            (querySnapshot) => {
-                const messages = [];
-                querySnapshot.forEach((doc) => {
-                    messages.push({ id: doc.id, ...doc.data() });
-                });
-                setMessageList(messages);
-            }
-        );
-    }, []);
-
-    console.log(messageList);
-
     return (
         <ChatBlock>
             <HeaderBlok>
                 <HeaderInfo>
                     <HeaderAvatar></HeaderAvatar>
                     <HeaderTitle>
-                        <h3>Email here</h3>
-                        <p>
-                            last visit :<span>11:55</span>
-                        </p>
+                        <h3>{chat.user[1]}</h3>
+                        {selectUser.length !== 0 && (
+                            <p>
+                                Последний визит :
+                                <span>
+                                    {new Date(
+                                        selectUser[0].lastSeen.seconds * 1000
+                                    ).toLocaleTimeString()}
+                                </span>
+                            </p>
+                        )}
                     </HeaderTitle>
                 </HeaderInfo>
                 <HeaderIconBlok>
@@ -73,12 +93,34 @@ const ChatScreen: React.FC<IChatScreen> = ({
                 </HeaderIconBlok>
             </HeaderBlok>
             <MessageContainer>
-                {messageList &&
-                    messageList.map((item) => (
-                        <Message key={item.id} id={item.id} text={item.text} />
+                {messages.length > 0 &&
+                    messages.map((item) => (
+                        <Message
+                            key={item.id}
+                            id={item.id}
+                            text={item.message}
+                            name={item.name}
+                            time={item.timestamp.seconds}
+                            img={item.img}
+                        />
                     ))}
                 <EndMessageBlock ref={refBottom}></EndMessageBlock>
             </MessageContainer>
+            <ChatInputBlock>
+                <IconButton>
+                    <SmileIcon />
+                </IconButton>
+                <ChatFormBlock onSubmit={submitMessage}>
+                    <Input
+                        placeholder="Новое сообщение"
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                    />
+                    <IconButton type="submit">
+                        <SendIcon />
+                    </IconButton>
+                </ChatFormBlock>
+            </ChatInputBlock>
         </ChatBlock>
     );
 };
@@ -87,7 +129,10 @@ export default ChatScreen;
 
 const ChatBlock = styled.div`
     background-color: #e6deda;
-    height: 100%;
+    position: relative;
+    padding-bottom: 55px;
+    flex: 1;
+    overflow: scroll;
 `;
 
 const HeaderBlok = styled.div`
@@ -124,3 +169,23 @@ const HeaderTitle = styled.div`
 const HeaderIconBlok = styled.div``;
 const MessageContainer = styled.div``;
 const EndMessageBlock = styled.div``;
+const ChatInputBlock = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 0 15px;
+    position: absolute;
+    bottom: 0;
+`;
+const ChatFormBlock = styled.form`
+    display: flex;
+    align-items: center;
+    width: 100%;
+`;
+const Input = styled.input`
+    flex: 1;
+    padding: 2px 5px;
+    outline-width: 0;
+    border: none;
+`;

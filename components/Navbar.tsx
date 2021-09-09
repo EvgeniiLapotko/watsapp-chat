@@ -11,7 +11,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 import MessageIcon from "@material-ui/icons/Message";
-import DotsIcon from "@material-ui/icons/MoreVert";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SearchIcon from "@material-ui/icons/Search";
 import { Button } from "@material-ui/core";
 import { addDoc, collection, onSnapshot, query } from "@firebase/firestore";
@@ -83,16 +83,13 @@ function Navbar() {
     return (
         <Container>
             <Header>
-                <HeaderAvatar
-                    onClick={() => signOut(auth)}
-                    src={user.photoURL}
-                ></HeaderAvatar>
+                <HeaderAvatar src={user.photoURL}></HeaderAvatar>
                 <HeaderIcon>
                     <IconButton>
                         <MessageIcon />
                     </IconButton>
-                    <IconButton>
-                        <DotsIcon />
+                    <IconButton onClick={() => signOut(auth)}>
+                        <ExitToAppIcon />
                     </IconButton>
                 </HeaderIcon>
             </Header>
