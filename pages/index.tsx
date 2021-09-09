@@ -19,4 +19,6 @@ export default function Home() {
     );
 }
 
-const App = styled.main``;
+const App = styled.main`
+    /* overflow: hidden; */
+`;

@@ -14,19 +14,11 @@ import MessageIcon from "@material-ui/icons/Message";
 import DotsIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
 import { Button } from "@material-ui/core";
-import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    onSnapshot,
-    query,
-    where,
-} from "@firebase/firestore";
+import { addDoc, collection, onSnapshot, query } from "@firebase/firestore";
 import { auth, db } from "../firebase";
 import Snackbar from "@material-ui/core/Snackbar";
 import { signOut } from "@firebase/auth";
+import Chat from "./Chat";
 
 function Navbar() {
     const [inputValue, setInputValue] = React.useState<string>("");
@@ -87,6 +79,7 @@ function Navbar() {
             setSnackValue(true);
         }
     };
+
     return (
         <Container>
             <Header>
@@ -130,8 +123,13 @@ function Navbar() {
                 key="123"
             />
             <NavbarButton onClick={createChat}>Добавить чат</NavbarButton>
-            {chatsList &&
-                chatsList.map((item) => <h4 key={item.id}>{item.user[1]}</h4>)}
+
+            <NavbarChatList>
+                {chatsList &&
+                    chatsList.map((item) => (
+                        <Chat key={item.id} users={item.user} id={item.id} />
+                    ))}
+            </NavbarChatList>
         </Container>
     );
 }
@@ -143,6 +141,8 @@ const Container = styled.section`
     border-right: 1px solid rgba(250, 250, 250);
     box-shadow: 1px 0 5px #ccc;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
 `;
 const Header = styled.div`
     display: flex;
@@ -176,5 +176,11 @@ const NavbarButton = styled(Button)`
     &&& {
         border-bottom: 2px solid whitesmoke;
         border-top: 2px solid whitesmoke;
+    }
+`;
+const NavbarChatList = styled.div`
+    overflow-y: auto;
+    ::-webkit-scrollbar {
+        display: none;
     }
 `;
