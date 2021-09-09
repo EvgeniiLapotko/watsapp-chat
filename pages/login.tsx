@@ -22,7 +22,7 @@ const Login: React.FC = (): React.ReactElement => {
             </Head>
             <LoginBlock>
                 <LogoInner>
-                    <img src="static/logo.png" alt="logo" />
+                    <img src="../static/logo.png" alt="logo" />
                 </LogoInner>
                 <LogoButton>
                     <ButtonGoogleContainer>
@@ -54,9 +54,14 @@ const LoginBlock = styled.div`
 `;
 const LogoInner = styled.div`
     text-align: center;
-    margin-bottom: 35px;
+    overflow: hidden;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    margin-bottom: 55px;
     img {
         width: 120px;
+        height: 120px;
     }
 `;
 const LogoButton = styled.div``;

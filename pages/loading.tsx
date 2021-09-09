@@ -3,18 +3,22 @@ import Loader from "react-loader-spinner";
 
 function Loading() {
     return (
-        <Container>
+        <ContainerLoading>
             <LoadingBlock>
-                <img src="../static/logo.png" alt="logo" />
+                <img
+                    src="../static/logo.png"
+                    alt="logo"
+                    style={{ width: 120, height: 120 }}
+                />
                 <Loader type="Rings" color="#3cbb28" height={40} width={40} />
             </LoadingBlock>
-        </Container>
+        </ContainerLoading>
     );
 }
 
 export default Loading;
 
-const Container = styled.div`
+const ContainerLoading = styled.div`
     height: 100vh;
     display: flex;
     justify-content: center;
