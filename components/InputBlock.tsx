@@ -23,6 +23,7 @@ function InputBlock({ idChat }) {
                     name: user.displayName,
                     img: user.photoURL,
                     timestamp: serverTimestamp(),
+                    email: user.email,
                 });
             }
         } catch (error) {

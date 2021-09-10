@@ -6,6 +6,8 @@ import styled from "styled-components";
 import { Button } from "@material-ui/core";
 import { signInWithRedirect } from "@firebase/auth";
 import { auth, provider } from "../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Loading from "./loading";
 
 const Login: React.FC = (): React.ReactElement => {
     const signIn = () => {
@@ -15,6 +17,7 @@ const Login: React.FC = (): React.ReactElement => {
             alert("Не удалось зарегистрироваться");
         }
     };
+
     return (
         <Container>
             <Head>

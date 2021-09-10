@@ -22,6 +22,7 @@ import {
 } from "@firebase/firestore";
 import Message from "./Message";
 import InputBlock from "./InputBlock";
+import TimeAgo from "timeago-react";
 
 interface IChatScreen {
     chat: any;
@@ -79,6 +80,7 @@ const ChatScreen: React.FC<IChatScreen> = ({
                     name={item.name}
                     time={item.timestamp ? item.timestamp.seconds : null}
                     img={item.img}
+                    email={item.email}
                 />
             ));
         } else {
@@ -90,6 +92,7 @@ const ChatScreen: React.FC<IChatScreen> = ({
                     name={item.name}
                     time={item.timestamp.seconds}
                     img={item.img}
+                    email={item.email}
                 />
             ));
         }
@@ -109,7 +112,7 @@ const ChatScreen: React.FC<IChatScreen> = ({
                                 Последний визит :
                                 <span>
                                     {new Date(
-                                        selectUser[0].lastSeen.seconds * 1000
+                                        +selectUser[0].lastSeen.seconds * 1000
                                     ).toLocaleTimeString()}
                                 </span>
                             </p>

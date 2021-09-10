@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
+
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 
@@ -15,10 +15,20 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Navbar />
+            <ChatBG></ChatBG>
         </App>
     );
 }
 
+const ChatBG = styled.div`
+    background-image: url(https://images.unsplash.com/photo-1586880244406-556ebe35f282?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    height: auto;
+    flex: 1;
+`;
 const App = styled.main`
-    /* overflow: hidden; */
+    display: flex;
 `;

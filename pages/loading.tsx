@@ -1,24 +1,26 @@
 import styled from "styled-components";
 import Loader from "react-loader-spinner";
+import Document from "next/document";
+import { ServerStyleSheet } from "styled-components";
 
 function Loading() {
     return (
-        <ContainerLoading>
+        <ContainerBlock>
             <LoadingBlock>
                 <img
                     src="../static/logo.png"
                     alt="logo"
                     style={{ width: 120, height: 120 }}
                 />
-                <Loader type="Rings" color="#3cbb28" height={40} width={40} />
+                <Loader type="Grid" color="#3cbb28" height={40} width={40} />
             </LoadingBlock>
-        </ContainerLoading>
+        </ContainerBlock>
     );
 }
 
 export default Loading;
 
-const ContainerLoading = styled.div`
+const ContainerBlock = styled.div`
     height: 100vh;
     display: flex;
     justify-content: center;

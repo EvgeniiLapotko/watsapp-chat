@@ -138,6 +138,7 @@ function Navbar() {
 export default Navbar;
 
 const Container = styled.section`
+    flex: 0.4;
     max-width: 320px;
     border-right: 1px solid rgba(250, 250, 250);
     box-shadow: 1px 0 5px #ccc;

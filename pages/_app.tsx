@@ -1,6 +1,7 @@
 import React from "react";
 
 import "../styles/globals.css";
+
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import Login from "./login";
@@ -30,12 +31,15 @@ function MyApp({ Component, pageProps }) {
         };
         addUser();
     }, [user]);
+
     if (loading) {
         return <Loading />;
     }
+
     if (!user) {
         return <Login />;
     }
+
     return <Component {...pageProps} />;
 }
 
