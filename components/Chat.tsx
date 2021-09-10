@@ -11,7 +11,7 @@ interface IChat {
     users: string[];
 }
 
-export const ChatNavbar: React.FC<IChat> = ({
+ const ChatNavbar: React.FC<IChat> = ({
     id,
     users,
 }: IChat): React.ReactElement => {
@@ -49,7 +49,7 @@ export const ChatNavbar: React.FC<IChat> = ({
         </ContainerChat>
     );
 };
-
+export default ChatNavbar;
 const ContainerChat = styled.div`
     overflow: auto;
     display: flex;

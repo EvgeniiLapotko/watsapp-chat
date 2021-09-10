@@ -18,7 +18,7 @@ import { addDoc, collection, onSnapshot, query } from "@firebase/firestore";
 import { auth, db } from "../firebase";
 import Snackbar from "@material-ui/core/Snackbar";
 import { signOut } from "@firebase/auth";
-import { ChatNavbar } from "./Chat";
+import  ChatNavbar  from "./Chat";
 
 function Navbar() {
     const [inputValue, setInputValue] = React.useState<string>("");
