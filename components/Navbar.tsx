@@ -37,11 +37,15 @@ function Navbar() {
     }, []);
 
     const chatsAlredyExist = (input: string): boolean => {
-        const filterChat = chatsList.filter((item) => item.user[1] === input);
-        if (filterChat.length > 0) {
-            return false;
-        } else {
-            return true;
+        if (chatsList) {
+            const filterChat = chatsList.filter(
+                (item) => item.user[1] === input
+            );
+            if (filterChat.length > 0) {
+                return false;
+            } else {
+                return true;
+            }
         }
     };
 

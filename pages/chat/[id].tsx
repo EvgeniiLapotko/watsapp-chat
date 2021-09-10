@@ -76,15 +76,6 @@ const ContainerChat = styled.section`
     display: flex;
 `;
 const ChatBlock = styled.div`
+    display: flex;
     flex: 1;
-    overflow-y: auto;
-    overflow-x: none;
-    height: 100vh;
-
-    ::-webkit-scrollbar {
-        display: none;
-    }
-    ::-webkit-scrollbar-thumb {
-        width: 0;
-    }
 `;

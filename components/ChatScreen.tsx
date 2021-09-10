@@ -15,9 +15,13 @@ import {
     collection,
     doc,
     getDoc,
+    onSnapshot,
+    orderBy,
+    query,
     serverTimestamp,
 } from "@firebase/firestore";
 import Message from "./Message";
+import InputBlock from "./InputBlock";
 
 interface IChatScreen {
     chat: any;
@@ -30,31 +34,12 @@ const ChatScreen: React.FC<IChatScreen> = ({
     messages,
     userDB,
 }: IChatScreen): React.ReactElement => {
-    const [user] = useAuthState(auth);
-    const router = useRouter();
-    const [inputMessage, setInputMessage] = React.useState<string>("");
+    const [messageList, setMessageList] = React.useState(messages);
 
     const refBottom = React.useRef<HTMLDivElement>(
         document.createElement("div")
     );
     const selectUser = userDB.filter((item) => item.email === chat.user[1]);
-
-    const submitMessage = async (e) => {
-        e.preventDefault();
-        setInputMessage("");
-        try {
-            if (user) {
-                await addDoc(collection(db, `chats/${chat.id}/messages`), {
-                    message: inputMessage,
-                    name: user.displayName,
-                    img: user.photoURL,
-                    timestamp: serverTimestamp(),
-                });
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     React.useEffect(() => {
         if (refBottom) {
@@ -62,13 +47,61 @@ const ChatScreen: React.FC<IChatScreen> = ({
                 behavior: "smooth",
             });
         }
-    }, []);
+    }, [messages, messageList]);
+    React.useEffect(() => {
+        onSnapshot(
+            query(
+                collection(db, `chats/${chat.id}/messages`),
+                orderBy("timestamp", "asc")
+            ),
+            (querySnapshot) => {
+                const messages = [];
+                querySnapshot.forEach((doc) => {
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
+                setMessageList(messages);
+            }
+        );
+        if (refBottom) {
+            refBottom.current.scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+    }, [messages]);
+
+    const showMessage = () => {
+        if (messageList) {
+            return messageList.map((item) => (
+                <Message
+                    key={item.id}
+                    id={item.id}
+                    text={item.message}
+                    name={item.name}
+                    time={item.timestamp ? item.timestamp.seconds : null}
+                    img={item.img}
+                />
+            ));
+        } else {
+            return messages.map((item) => (
+                <Message
+                    key={item.id}
+                    id={item.id}
+                    text={item.message}
+                    name={item.name}
+                    time={item.timestamp.seconds}
+                    img={item.img}
+                />
+            ));
+        }
+    };
 
     return (
         <ChatBlock>
             <HeaderBlok>
                 <HeaderInfo>
-                    <HeaderAvatar></HeaderAvatar>
+                    <HeaderAvatar
+                        src={selectUser[0] ? selectUser[0].photoUrl : ""}
+                    ></HeaderAvatar>
                     <HeaderTitle>
                         <h3>{chat.user[1]}</h3>
                         {selectUser.length !== 0 && (
@@ -93,34 +126,10 @@ const ChatScreen: React.FC<IChatScreen> = ({
                 </HeaderIconBlok>
             </HeaderBlok>
             <MessageContainer>
-                {messages.length > 0 &&
-                    messages.map((item) => (
-                        <Message
-                            key={item.id}
-                            id={item.id}
-                            text={item.message}
-                            name={item.name}
-                            time={item.timestamp.seconds}
-                            img={item.img}
-                        />
-                    ))}
+                {showMessage()}
                 <EndMessageBlock ref={refBottom}></EndMessageBlock>
             </MessageContainer>
-            <ChatInputBlock>
-                <IconButton>
-                    <SmileIcon />
-                </IconButton>
-                <ChatFormBlock onSubmit={submitMessage}>
-                    <Input
-                        placeholder="Новое сообщение"
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                    />
-                    <IconButton type="submit">
-                        <SendIcon />
-                    </IconButton>
-                </ChatFormBlock>
-            </ChatInputBlock>
+            <InputBlock idChat={chat.id} />
         </ChatBlock>
     );
 };
@@ -132,7 +141,6 @@ const ChatBlock = styled.div`
     position: relative;
     padding-bottom: 55px;
     flex: 1;
-    overflow: scroll;
 `;
 
 const HeaderBlok = styled.div`
@@ -167,25 +175,11 @@ const HeaderTitle = styled.div`
 `;
 
 const HeaderIconBlok = styled.div``;
-const MessageContainer = styled.div``;
+const MessageContainer = styled.div`
+    max-height: 85vh;
+    overflow-y: scroll;
+    ::-webkit-scrollbar {
+        display: none;
+    }
+`;
 const EndMessageBlock = styled.div``;
-const ChatInputBlock = styled.div`
-    width: 100%;
-    display: flex;
-    align-items: center;
-    background-color: #fff;
-    padding: 0 15px;
-    position: absolute;
-    bottom: 0;
-`;
-const ChatFormBlock = styled.form`
-    display: flex;
-    align-items: center;
-    width: 100%;
-`;
-const Input = styled.input`
-    flex: 1;
-    padding: 2px 5px;
-    outline-width: 0;
-    border: none;
-`;

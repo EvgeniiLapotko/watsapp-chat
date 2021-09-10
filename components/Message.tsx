@@ -35,7 +35,6 @@ export default Message;
 const MessageContainer = styled.div`
     margin: 15px;
     display: flex;
-    width: 100%;
 `;
 
 const MessageImg = styled(Avatar)``;
