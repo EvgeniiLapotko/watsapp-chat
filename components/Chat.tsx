@@ -1,24 +1,20 @@
-import {
-    collection,
-    getDocs,
-    query,
-    where,
-    onSnapshot,
-    doc,
-} from "@firebase/firestore";
+import { collection, query, where, onSnapshot } from "@firebase/firestore";
 import { Avatar } from "@material-ui/core";
-import { Router, useRouter } from "next/dist/client/router";
+import { useRouter } from "next/dist/client/router";
 import React from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+
 import styled from "styled-components";
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 
 interface IChat {
     id: string;
     users: string[];
 }
 
-const Chat: React.FC<IChat> = ({ id, users }: IChat): React.ReactElement => {
+export const Chat: React.FC<IChat> = ({
+    id,
+    users,
+}: IChat): React.ReactElement => {
     const router = useRouter();
 
     const [userChat, setUserChat] = React.useState<any>({});
@@ -53,8 +49,6 @@ const Chat: React.FC<IChat> = ({ id, users }: IChat): React.ReactElement => {
         </ContainerChat>
     );
 };
-
-export default Chat;
 
 const ContainerChat = styled.div`
     overflow: auto;
