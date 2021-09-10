@@ -35,7 +35,7 @@ function Chat({ chats, messages, userDB }) {
     );
 }
 
-export {};
+export default Chat;
 
 export async function getServerSideProps(context) {
     const messages = [];

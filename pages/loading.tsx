@@ -1,7 +1,5 @@
 import styled from "styled-components";
 import Loader from "react-loader-spinner";
-import Document from "next/document";
-import { ServerStyleSheet } from "styled-components";
 
 function Loading() {
     return (
