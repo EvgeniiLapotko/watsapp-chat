@@ -2,7 +2,7 @@ import { collection, query, where, onSnapshot } from "@firebase/firestore";
 import { Avatar } from "@material-ui/core";
 import { useRouter } from "next/dist/client/router";
 import React from "react";
-
+import { Component } from "react";
 import styled from "styled-components";
 import { db } from "../firebase";
 
@@ -11,7 +11,7 @@ interface IChat {
     users: string[];
 }
 
-export const Chat: React.FC<IChat> = ({
+export const ChatNavbar: React.FC<IChat> = ({
     id,
     users,
 }: IChat): React.ReactElement => {
@@ -66,3 +66,5 @@ const ChatAvatar = styled(Avatar)`
     opacity: 0.8;
 `;
 const ChatTitle = styled.div``;
+
+export {};

@@ -18,7 +18,7 @@ import { addDoc, collection, onSnapshot, query } from "@firebase/firestore";
 import { auth, db } from "../firebase";
 import Snackbar from "@material-ui/core/Snackbar";
 import { signOut } from "@firebase/auth";
-import {Chat} from "./Chat";
+import { ChatNavbar } from "./Chat";
 
 function Navbar() {
     const [inputValue, setInputValue] = React.useState<string>("");
@@ -128,7 +128,11 @@ function Navbar() {
             <NavbarChatList>
                 {chatsList &&
                     chatsList.map((item) => (
-                        <Chat key={item.id} users={item.user} id={item.id} />
+                        <ChatNavbar
+                            key={item.id}
+                            users={item.user}
+                            id={item.id}
+                        />
                     ))}
             </NavbarChatList>
         </Container>
